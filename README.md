@@ -1,4 +1,6 @@
 # ✨ Full Stack Realtime Chat and Social Media App ✨
+![Demo App](/frontend/public/screenshot1.png)
+![Demo App](/frontend/public/screenshot2.png)
 
 Highlights
 🌟 Tech Stack: MERN (MongoDB, Express, React, Node.js) + Socket.io + TailwindCSS + Daisy UI
