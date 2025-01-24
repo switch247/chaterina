@@ -66,7 +66,10 @@ function PostsPage() {
                         />
                     </div>
                 </div>
-                <RightSidebar />
+                {/* Hide RightSidebar on small screens */}
+                <div className="hidden md:block">
+                    <RightSidebar />
+                </div>
             </div>
         </div>
 
