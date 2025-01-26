@@ -1,13 +1,5 @@
 import { useState } from "react";
 import { X } from "lucide-react"; // Lucide icon for closing the modal
-import { v2 as cloudinary } from "cloudinary"; // Import Cloudinary SDK
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-  api_key: import.meta.env.VITE_CLOUDINARY_API_KEY,
-  api_secret: import.meta.env.VITE_CLOUDINARY_API_SECRET,
-});
 
 function CreatePostModal({ show, onHide, onSubmit }) {
   const [content, setContent] = useState("");
@@ -28,20 +20,33 @@ function CreatePostModal({ show, onHide, onSubmit }) {
     setError("");
   };
 
-  // Handle image upload to Cloudinary
+  // Handle image upload to Cloudinary using the API
   const handleImageUpload = async (file) => {
     if (!file) return;
 
     setIsUploading(true);
     setError("");
 
-    try {
-      const uploadResult = await cloudinary.uploader.upload(file, {
-        upload_preset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET, // Use the upload preset
-        public_id: `post_${Date.now()}`, // Unique public ID for the image
-      });
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); // Use the upload preset
+    formData.append("cloud_name", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME); // Use the cloud name
 
-      setImage(uploadResult.secure_url); // Set the uploaded image URL
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image.");
+      }
+
+      const data = await response.json();
+      setImage(data.secure_url); // Set the uploaded image URL
     } catch (error) {
       console.error("Error uploading image:", error);
       setError("Failed to upload image. Please try again.");
